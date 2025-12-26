@@ -1,57 +1,66 @@
-const BASE_URL="http://localhost:5000";
-let hits=0,misses=0,chart=null;
+let capacity = 3;
+let cache = new Map();
+let hits = 0, misses = 0;
 
-async function api(url){ return fetch(url).then(r=>r.json()).catch(()=>[]); }
-
-// SET CAPACITY
-async function setCapacity(){
-    await api(`${BASE_URL}/set/${capacity.value}`);
-    hits=misses=0; updateStats(); render();
+function setCapacity(){
+  capacity = parseInt(document.getElementById("capacity").value);
+  cache.clear();
+  hits = misses = 0;
+  updateChart(); render();
 }
 
-// ADD
-async function addValue(){
-    const v=valueInput.value;
-    if(!v) return;
-
-    let list=await api(`${BASE_URL}/list`);
-    list.includes(String(v)) ? hits++ : misses++;
-
-    updateStats();
-    await api(`${BASE_URL}/add/${v}`);
-    render();
+function addValue(){
+  let val = document.getElementById("valueInput").value;
+  if(cache.has(val)){
+    cache.delete(val); hits++;
+  } else{
+    if(cache.size >= capacity) cache.delete(cache.keys().next().value);
+    misses++;
+  }
+  cache.set(val,true);
+  updateChart(); render();
 }
 
-// REMOVE
-async function removeValue(){ await api(`${BASE_URL}/remove/${valueInput.value}`); render(); }
-
-// CLEAR
-async function clearCache(){ await api(`${BASE_URL}/clear`); hits=misses=0; updateStats(); render(); }
-
-// UPDATE UI
-async function render(){
-    let arr=await api(`${BASE_URL}/list`);
-    arr.reverse();         // MRU → LRU
-    cache.innerHTML="";
-    arr.forEach(v=>cache.innerHTML+=`<div class="item">${v}</div>`);
+function removeValue(){
+  let val = document.getElementById("valueInput").value;
+  cache.delete(val);
+  render();
 }
 
-// STATS + CHART
-function updateStats(){
-    hit.innerText=hits; miss.innerText=misses; drawChart();
+function clearCache(){
+  cache.clear();
+  hits = misses = 0;
+  updateChart(); render();
 }
 
-function drawChart(){
-    const ctx=document.getElementById("chart").getContext("2d");
-    if(chart) chart.destroy();
-    chart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels:["Hits","Misses"],
-            datasets:[{data:[hits,misses],backgroundColor:["green","red"]}]
-        },
-        options:{scales:{y:{beginAtZero:true}}}
-    });
+function render(){
+  document.getElementById("hit").innerText = hits;
+  document.getElementById("miss").innerText = misses;
+
+  const div = document.getElementById("cache");
+  div.innerHTML = "";
+  Array.from(cache.keys()).reverse().forEach(v=>{
+    let b=document.createElement("div");
+    b.className="block";
+    b.innerText=v;
+    div.appendChild(b);
+  });
 }
 
-render(); updateStats();
+let chart = new Chart(document.getElementById("chart"),{
+  type:'bar',
+  data:{ labels:['Hits','Misses'],
+  datasets:[{data:[0,0]}]},
+  options:{animation:true, scales:{y:{beginAtZero:true}}}
+});
+
+function updateChart(){
+  chart.data.datasets[0].data=[hits,misses];
+  chart.update();
+}
+
+/* Dark Mode */
+document.querySelector("#themeToggle").onclick = ()=>{
+  document.body.classList.toggle("dark");
+}
+setTimeout(()=>document.querySelectorAll(".fade-in").forEach(e=>e.classList.add("show")),200);

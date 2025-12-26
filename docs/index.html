@@ -1,38 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>LRU Cache Visualizer</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title> LRU Cache Visualizer</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<div class="container">
+<header>
+  <h1> LRU Cache Visualizer</h1>
+  <button id="themeToggle">🌙 Dark</button>
+</header>
 
-    <h2>🔥 LRU Cache Visualizer</h2>
+<div class="card">
 
-    <div class="row">
-        <input id="capacity" type="number" placeholder="Capacity">
-        <button onclick="setCapacity()">Set</button>
-    </div>
+  <div class="inputs fade-in">
+      <input id="capacity" type="number" placeholder="Set Cache Capacity">
+      <button onclick="setCapacity()">Set</button>
+  </div>
 
-    <div class="row">
-        <input id="valueInput" type="number" placeholder="Enter Value">
-        <button onclick="addValue()">Add</button>
-        <button onclick="removeValue()">Remove</button>
-        <button onclick="clearCache()">Clear</button>
-    </div>
+  <div class="inputs fade-in delay-1">
+      <input id="valueInput" type="number" placeholder="Enter Value">
+      <button onclick="addValue()">Add</button>
+      <button onclick="removeValue()">Remove</button>
+      <button onclick="clearCache()">Clear</button>
+  </div>
 
-    <h3>Cache (MRU → LRU)</h3>
-    <div class="stats">Hits: <span id="hit">0</span> | Misses: <span id="miss">0</span></div>
+  <h2 class="fade-in delay-2">Cache ( MRU → LRU )</h2>
+  <p class="stats fade-in delay-2">Hits: <span id="hit">0</span> | Misses: <span id="miss">0</span></p>
 
-    <!-- Cache + Arrows inline -->
-    <div id="cache" class="cache"></div>
+  <div id="cache" class="cache fade-in delay-3"></div>
 
-    <canvas id="chart" width="400" height="140"></canvas>
+  <canvas id="chart" class="fade-in delay-4"></canvas>
 
 </div>
+
+<footer>
+   Made by Siri Chandana
+</footer>
 
 <script src="script.js"></script>
 </body>
