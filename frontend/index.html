@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>LRU Cache Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>🔥 LRU Cache Visualizer</h2>
+
+    <div class="row">
+        <input id="capacity" type="number" placeholder="Capacity">
+        <button onclick="setCapacity()">Set</button>
+    </div>
+
+    <div class="row">
+        <input id="valueInput" type="number" placeholder="Enter Value">
+        <button onclick="addValue()">Add</button>
+        <button onclick="removeValue()">Remove</button>
+        <button onclick="clearCache()">Clear</button>
+    </div>
+
+    <h3>Cache (MRU → LRU)</h3>
+    <div class="stats">Hits: <span id="hit">0</span> | Misses: <span id="miss">0</span></div>
+
+    <!-- Cache + Arrows inline -->
+    <div id="cache" class="cache"></div>
+
+    <canvas id="chart" width="400" height="140"></canvas>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
