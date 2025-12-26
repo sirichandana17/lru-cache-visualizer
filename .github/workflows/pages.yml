@@ -1,8 +1,8 @@
-name: Deploy static site to GitHub Pages
+name: Deploy static site to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -14,13 +14,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v3
+      - name: Checkout source
+        uses: actions/checkout@v3
 
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: docs
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: docs    # <-- your static site folder
 
-    - name: Deploy to GitHub Pages
-      uses: actions/deploy-pages@v2
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2
