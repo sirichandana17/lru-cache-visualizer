@@ -12,8 +12,6 @@ This visualizer demonstrates **insertion, access, cache reordering, eviction log
 
 ## 🖼 Preview
 
-> *(Add this screenshot as `preview.png` inside repo — Root folder or /assets)*  
-
 ![LRU Cache Visualizer UI](preview.png)
 
 ---
@@ -71,3 +69,8 @@ git clone https://github.com/sirichandana17/lru-cache-visualizer.git
 cd lru-cache-visualizer
 open index.html   # or run using Live Server in VS Code
 
+---
+
+## ✨ Author
+
+**Siri Chandana**
