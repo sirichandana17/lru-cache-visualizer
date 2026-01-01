@@ -1,74 +1,101 @@
-let cap = 3;
-let map = new Map();
+let cacheCap = 3;
+let cacheMap = new Map();
 let hits = 0, misses = 0;
 
+/* ---------- SET CAPACITY ---------- */
 function setCap(){
-    let c = parseInt(cap.value);
-    if(c < 1) return show("Enter valid capacity","rem");
-    cap = c; map.clear(); hits = 0; misses = 0;
-    render(); show("Capacity set","rem");
+    let c = Number(document.getElementById("cap").value);
+
+    if(!c || c < 1){
+        return show("Enter valid capacity","miss");
+    }
+
+    cacheCap = c;
+
+    // 🔥 Shrink cache if size already > new capacity
+    while(cacheMap.size > cacheCap){
+        let lru = cacheMap.keys().next().value;
+        cacheMap.delete(lru);
+    }
+
+    hits = 0; 
+    misses = 0;
+    render();
+    show("Capacity set to " + cacheCap,"rem");
 }
 
+/* ---------- PUT ---------- */
 function put(){
-    let k = key.value.trim(), v = val.value.trim();
+    let k = key.value.trim();
+    let v = val.value.trim();
+
     if(!k || !v) return show("Enter key & value","miss");
 
-    if(map.has(k)){                         // HIT
-        let old = map.get(k);
-        map.delete(k); map.set(k, old);
+    // HIT case
+    if(cacheMap.has(k)){
+        let oldVal = cacheMap.get(k);
+        cacheMap.delete(k);
+        cacheMap.set(k, oldVal);   // move to MRU
         hits++; render();
         show("HIT - Key matched","hit");
         highlight(k);
         return;
     }
 
-    // MISS section
-    if(map.size >= cap){
-        let lru = map.keys().next().value;
-        map.delete(lru);
-        misses++; show("MISS - Removed LRU "+lru,"rem");
+    // MISS case
+    if(cacheMap.size >= cacheCap){
+        let lru = cacheMap.keys().next().value;
+        cacheMap.delete(lru);
+        misses++;
+        show("MISS - Removed LRU " + lru,"rem");
     } else {
-        misses++; show("MISS - Key stored","miss");
+        misses++;
+        show("MISS - Key stored","miss");
     }
 
-    map.set(k, v);
+    cacheMap.set(k, v);
     render();
 }
 
+/* ---------- GET ---------- */
 function get(){
     let k = key.value.trim();
     if(!k) return show("Enter key","miss");
 
-    if(map.has(k)){
-        let v = map.get(k);
-        map.delete(k); map.set(k,v);
+    if(cacheMap.has(k)){
+        let val = cacheMap.get(k);
+        cacheMap.delete(k); cacheMap.set(k,val);
         hits++; render();
-        show("HIT - "+k+":"+v,"hit");
+        show("HIT - "+k+":"+val,"hit");
         highlight(k);
-    } else {
+    } 
+    else{
         misses++; render();
         show("MISS - Not found","miss");
     }
 }
 
+/* ---------- CLEAR ---------- */
 function clr(){
-    map.clear(); hits = 0; misses = 0;
-    render(); show("Cache cleared","rem");
+    cacheMap = new Map();
+    hits = 0; misses = 0;
+    render();
+    show("Cache cleared","rem");
 }
 
-/* ------- Rendering -------- */
+/* ---------- RENDER UI ---------- */
 function render(){
-    document.getElementById("hit").innerText = hits;
-    document.getElementById("miss").innerText = misses;
+    hit.innerText = hits;
+    miss.innerText = misses;
 
     cache.innerHTML = "";
-    [...map].forEach(([k,v],i)=>{
+    [...cacheMap].forEach(([k,v],i)=>{
         let node = document.createElement("div");
         node.className="node";
-        node.innerHTML = `${k}<small>${v}</small>`;
+        node.innerHTML=`${k}<small>${v}</small>`;
         cache.appendChild(node);
 
-        if(i != map.size-1){
+        if(i < cacheMap.size-1){
             let arrow=document.createElement("div");
             arrow.className="arrow"; arrow.innerText="➝";
             cache.appendChild(arrow);
@@ -76,21 +103,22 @@ function render(){
     });
 }
 
-/* Highlight on HIT */
+/* ---------- Highlight ---------- */
 function highlight(k){
     setTimeout(()=>{
         document.querySelectorAll(".node").forEach(n=>{
             n.classList.remove("hit-node");
-            if(n.innerText.split("\n")[0]==k) n.classList.add("hit-node");
+            if(n.innerText.split("\n")[0] == k) 
+                n.classList.add("hit-node");
         });
-    },70);
+    },150);
 }
 
-/* Status message color */
-function show(t,type){
+/* ---------- Status Banner ---------- */
+function show(text,type){
     msg.className="msg";
     if(type=="hit") msg.classList.add("msg-hit");
     if(type=="miss") msg.classList.add("msg-miss");
     if(type=="rem") msg.classList.add("msg-rem");
-    msg.textContent=t;
+    msg.textContent=text;
 }

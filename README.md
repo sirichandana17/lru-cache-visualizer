@@ -12,7 +12,8 @@ This visualizer demonstrates **insertion, access, cache reordering, eviction log
 
 ## 🖼 Preview
 
-![LRU Cache Visualizer UI](preview.png)
+![LRU Cache Visualizer UI](preview-new.png)
+
 
 ---
 
