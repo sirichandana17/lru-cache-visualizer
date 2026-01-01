@@ -1,66 +1,96 @@
-let capacity = 3;
-let cache = new Map();
+let cap = 3;
+let map = new Map();
 let hits = 0, misses = 0;
 
-function setCapacity(){
-  capacity = parseInt(document.getElementById("capacity").value);
-  cache.clear();
-  hits = misses = 0;
-  updateChart(); render();
+function setCap(){
+    let c = parseInt(cap.value);
+    if(c < 1) return show("Enter valid capacity","rem");
+    cap = c; map.clear(); hits = 0; misses = 0;
+    render(); show("Capacity set","rem");
 }
 
-function addValue(){
-  let val = document.getElementById("valueInput").value;
-  if(cache.has(val)){
-    cache.delete(val); hits++;
-  } else{
-    if(cache.size >= capacity) cache.delete(cache.keys().next().value);
-    misses++;
-  }
-  cache.set(val,true);
-  updateChart(); render();
+function put(){
+    let k = key.value.trim(), v = val.value.trim();
+    if(!k || !v) return show("Enter key & value","miss");
+
+    if(map.has(k)){                         // HIT
+        let old = map.get(k);
+        map.delete(k); map.set(k, old);
+        hits++; render();
+        show("HIT - Key matched","hit");
+        highlight(k);
+        return;
+    }
+
+    // MISS section
+    if(map.size >= cap){
+        let lru = map.keys().next().value;
+        map.delete(lru);
+        misses++; show("MISS - Removed LRU "+lru,"rem");
+    } else {
+        misses++; show("MISS - Key stored","miss");
+    }
+
+    map.set(k, v);
+    render();
 }
 
-function removeValue(){
-  let val = document.getElementById("valueInput").value;
-  cache.delete(val);
-  render();
+function get(){
+    let k = key.value.trim();
+    if(!k) return show("Enter key","miss");
+
+    if(map.has(k)){
+        let v = map.get(k);
+        map.delete(k); map.set(k,v);
+        hits++; render();
+        show("HIT - "+k+":"+v,"hit");
+        highlight(k);
+    } else {
+        misses++; render();
+        show("MISS - Not found","miss");
+    }
 }
 
-function clearCache(){
-  cache.clear();
-  hits = misses = 0;
-  updateChart(); render();
+function clr(){
+    map.clear(); hits = 0; misses = 0;
+    render(); show("Cache cleared","rem");
 }
 
+/* ------- Rendering -------- */
 function render(){
-  document.getElementById("hit").innerText = hits;
-  document.getElementById("miss").innerText = misses;
+    document.getElementById("hit").innerText = hits;
+    document.getElementById("miss").innerText = misses;
 
-  const div = document.getElementById("cache");
-  div.innerHTML = "";
-  Array.from(cache.keys()).reverse().forEach(v=>{
-    let b=document.createElement("div");
-    b.className="block";
-    b.innerText=v;
-    div.appendChild(b);
-  });
+    cache.innerHTML = "";
+    [...map].forEach(([k,v],i)=>{
+        let node = document.createElement("div");
+        node.className="node";
+        node.innerHTML = `${k}<small>${v}</small>`;
+        cache.appendChild(node);
+
+        if(i != map.size-1){
+            let arrow=document.createElement("div");
+            arrow.className="arrow"; arrow.innerText="➝";
+            cache.appendChild(arrow);
+        }
+    });
 }
 
-let chart = new Chart(document.getElementById("chart"),{
-  type:'bar',
-  data:{ labels:['Hits','Misses'],
-  datasets:[{data:[0,0]}]},
-  options:{animation:true, scales:{y:{beginAtZero:true}}}
-});
-
-function updateChart(){
-  chart.data.datasets[0].data=[hits,misses];
-  chart.update();
+/* Highlight on HIT */
+function highlight(k){
+    setTimeout(()=>{
+        document.querySelectorAll(".node").forEach(n=>{
+            n.classList.remove("hit-node");
+            if(n.innerText.split("\n")[0]==k) n.classList.add("hit-node");
+        });
+    },70);
 }
 
-/* Dark Mode */
-document.querySelector("#themeToggle").onclick = ()=>{
-  document.body.classList.toggle("dark");
+/* Status message color */
+function show(t,type){
+    msg.className="msg";
+    if(type=="hit") msg.classList.add("msg-hit");
+    if(type=="miss") msg.classList.add("msg-miss");
+    if(type=="rem") msg.classList.add("msg-rem");
+    msg.textContent=t;
 }
-setTimeout(()=>document.querySelectorAll(".fade-in").forEach(e=>e.classList.add("show")),200);
