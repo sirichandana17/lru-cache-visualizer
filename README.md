@@ -63,6 +63,10 @@ On every **PUT/GET**, cache updates are shown instantly with **HIT/MISS indicato
 
 ---
 
-## ✨ Author
+## 📂 Run Locally
 
-**Siri Chandana**
+```bash
+git clone https://github.com/sirichandana17/lru-cache-visualizer.git
+cd lru-cache-visualizer
+open index.html   # or run using Live Server in VS Code
+
