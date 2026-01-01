@@ -60,15 +60,7 @@ On every **PUT/GET**, cache updates are shown instantly with **HIT/MISS indicato
 | **CSS** | Layout & Styling |
 | **JavaScript** | LRU Cache Logic & Visualization |
 
----
 
-## 📂 Run Locally
-
-```bash
-git clone https://github.com/sirichandana17/lru-cache-visualizer.git
-cd lru-cache-visualizer
-open index.html   # or run using Live Server in VS Code
-```
 ---
 
 ## ✨ Author
